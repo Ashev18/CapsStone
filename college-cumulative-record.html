@@ -1,0 +1,568 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Senior High School Cumulative Record</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background: #f4f4f4;
+        }
+        .container {
+            max-width: 900px;
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        h2 {
+            background: #2c3e50;
+            color: white;
+            padding: 10px;
+            border-radius: 5px;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        .form-group label {
+            font-weight: bold;
+            display: block;
+            margin-bottom: 5px;
+        }
+        .form-group input, .form-group select {
+            width: calc(100% - 22px);
+            padding: 8px;
+            margin-bottom: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+        .form-group input.disabled-field {
+            background-color: rgba(0, 0, 0, 0.1); /* Transparent gray */
+            color: #666;
+            pointer-events: none; /* Disable interaction */
+        }
+        .form-group input[type="radio"] {
+            width: auto;
+            margin-right: 10px;
+        }
+        .form-group-inline {
+            display: flex;
+            align-items: center;
+        }
+        .form-group-inline label {
+            margin-right: 10px;
+        }
+        .form-group-inline input[type="radio"] {
+            margin-right: 5px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+        }
+        table, th, td {
+            border: 1px solid black;
+        }
+        th, td {
+            padding: 8px;
+            text-align: left;
+        }
+        .navigation {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 20px;
+        }
+        .navigation-right {
+            display: flex;
+            justify-content: flex-end;
+            width: 100%;
+        }
+        button {
+            padding: 10px 15px;
+            border: none;
+            background: #2c3e50;
+            color: white;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+        button:hover {
+            background: #34495e;
+        }
+        .form-section {
+            display: none;
+        }
+        .form-section.active {
+            display: block;
+        }
+        .optional-field {
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        .optional-field label {
+            margin-right: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="form-section active" id="personal-data">
+            <h2>Personal Data</h2>
+            <div class="form-group">
+                <label for="name">Name:</label>
+                <input type="text" id="name" placeholder="Last, First, Middle">
+            </div>
+            <div class="form-group">
+                <label for="age">Age:</label>
+                <input type="number" id="age" min="1">
+                <label for="dob">Date of Birth:</label>
+                <input type="date" id="dob">
+                <label for="pob">Place of Birth:</label>
+                <input type="text" id="pob">
+                <label for="nationality">Nationality:</label>
+                <input type="text" id="nationality">
+            </div>
+            <div class="form-group">
+                <label for="birth-order">Rank or Order of Birth:</label>
+                <select id="birth-order">
+                    <option value="first">First</option>
+                    <option value="middle">Middle</option>
+                    <option value="last">Last</option>
+                    <option value="only">Only Child</option>
+                    <option value="others">Others</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="current-address">Current Address:</label>
+                <input type="text" id="current-address">
+                <label for="permanent-address">Permanent Address:</label>
+                <input type="text" id="permanent-address">
+            </div>
+            <div class="form-group">
+                <label for="religion">Religion:</label>
+                <input type="text" id="religion">
+                <label for="phone">Cell Phone Number:</label>
+                <input type="tel" id="phone">
+                <label for="email">Email:</label>
+                <input type="email" id="email">
+            </div>
+            <div class="form-group">
+                <label for="languages-home">Languages/Dialects Spoken at Home:</label>
+                <input type="text" id="languages-home">
+                <label for="languages-fluent">Languages/Dialects Most Fluent In:</label>
+                <input type="text" id="languages-fluent">
+            </div>
+            <div class="form-group">
+                <label for="sex">Sex:</label>
+                <div class="form-group-inline">
+                    <input type="radio" id="male" name="sex" value="male">
+                    <label for="male">Male</label>
+                    <input type="radio" id="female" name="sex" value="female">
+                    <label for="female">Female</label>
+                </div>
+            </div>
+            <div class="navigation-right">
+                <button type="button" onclick="nextSection('father-information')">Next</button>
+            </div>
+        </div>
+
+        <div class="form-section" id="father-information">
+            <h2>Father's Information</h2>
+            <div class="optional-field">
+                <label for="father-no-parent">Does not have Father (Optional):</label>
+                <input type="checkbox" id="father-no-parent" onchange="toggleFields('father')">
+            </div>
+            <div class="form-group">
+                <label for="father-name">Name:</label>
+                <input type="text" id="father-name" class="father-field">
+                <label for="father-dob">Date of Birth:</label>
+                <input type="date" id="father-dob" class="father-field">
+            </div>
+            <div class="form-group">
+                <label for="father-birthplace">Birthplace:</label>
+                <input type="text" id="father-birthplace" class="father-field">
+                <label for="father-nationality">Nationality:</label>
+                <input type="text" id="father-nationality" class="father-field">
+            </div>
+            <div class="form-group">
+                <label for="father-current-address">Current Address:</label>
+                <input type="text" id="father-current-address" class="father-field">
+                <label for="father-permanent-address">Permanent Address:</label>
+                <input type="text" id="father-permanent-address" class="father-field">
+            </div>
+            <div class="form-group">
+                <label for="father-landline">Landline:</label>
+                <input type="tel" id="father-landline" class="father-field">
+                <label for="father-phone">Cell Phone Number:</label>
+                <input type="tel" id="father-phone" class="father-field">
+            </div>
+            <div class="form-group">
+                <label for="father-education">Highest Educational Attainment:</label>
+                <input type="text" id="father-education" class="father-field">
+                <label for="father-occupation">Occupation:</label>
+                <input type="text" id="father-occupation" class="father-field">
+            </div>
+            <div class="form-group">
+                <label for="father-business-address">Business Address:</label>
+                <input type="text" id="father-business-address" class="father-field">
+                <label for="father-business-phone">Business Telephone:</label>
+                <input type="tel" id="father-business-phone" class="father-field">
+            </div>
+            <div class="form-group">
+                <label for="father-language">Language Spoken:</label>
+                <input type="text" id="father-language" class="father-field">
+                <label for="father-religion">Religion:</label>
+                <input type="text" id="father-religion" class="father-field">
+            </div>
+            <div class="navigation">
+                <button type="button" onclick="prevSection('personal-data')">Previous</button>
+                <button type="button" onclick="nextSection('mother-information')">Next</button>
+            </div>
+        </div>
+
+        <div class="form-section" id="mother-information">
+            <h2>Mother's Information</h2>
+            <div class="optional-field">
+                <label for="mother-no-parent">Does not have Mother (Optional):</label>
+                <input type="checkbox" id="mother-no-parent" onchange="toggleFields('mother')">
+            </div>
+            <div class="form-group">
+                <label for="mother-name">Name:</label>
+                <input type="text" id="mother-name" class="mother-field">
+                <label for="mother-dob">Date of Birth:</label>
+                <input type="date" id="mother-dob" class="mother-field">
+            </div>
+            <div class="form-group">
+                <label for="mother-birthplace">Birthplace:</label>
+                <input type="text" id="mother-birthplace" class="mother-field">
+                <label for="mother-nationality">Nationality:</label>
+                <input type="text" id="mother-nationality" class="mother-field">
+            </div>
+            <div class="form-group">
+                <label for="mother-current-address">Current Address:</label>
+                <input type="text" id="mother-current-address" class="mother-field">
+                <label for="mother-permanent-address">Permanent Address:</label>
+                <input type="text" id="mother-permanent-address" class="mother-field">
+            </div>
+            <div class="form-group">
+                <label for="mother-landline">Landline:</label>
+                <input type="tel" id="mother-landline" class="mother-field">
+                <label for="mother-phone">Cell Phone Number:</label>
+                <input type="tel" id="mother-phone" class="mother-field">
+            </div>
+            <div class="form-group">
+                <label for="mother-education">Highest Educational Attainment:</label>
+                <input type="text" id="mother-education" class="mother-field">
+                <label for="mother-occupation">Occupation:</label>
+                <input type="text" id="mother-occupation" class="mother-field">
+            </div>
+            <div class="form-group">
+                <label for="mother-business-address">Business Address:</label>
+                <input type="text" id="mother-business-address" class="mother-field">
+                <label for="mother-business-phone">Business Telephone:</label>
+                <input type="tel" id="mother-business-phone" class="mother-field">
+            </div>
+            <div class="form-group">
+                <label for="mother-language">Language Spoken:</label>
+                <input type="text" id="mother-language" class="mother-field">
+                <label for="mother-religion">Religion:</label>
+                <input type="text" id="mother-religion" class="mother-field">
+            </div>
+            <div class="navigation">
+                <button type="button" onclick="prevSection('father-information')">Previous</button>
+                <button type="button" onclick="nextSection('guardian-information')">Next</button>
+            </div>
+        </div>
+
+        <div class="form-section" id="guardian-information">
+            <h2>Guardian's Information (if not living with parents)</h2>
+            <div class="form-group">
+                <label for="guardian-name">Name:</label>
+                <input type="text" id="guardian-name">
+                <label for="guardian-address">Address:</label>
+                <input type="text" id="guardian-address">
+                <label for="guardian-phone">Cell Phone Number:</label>
+                <input type="tel" id="guardian-phone">
+                <label for="guardian-relationship">Relationship with Guardian:</label>
+                <input type="text" id="guardian-relationship">
+            </div>
+            <div class="navigation">
+                <button type="button" onclick="prevSection('mother-information')">Previous</button>
+                <button type="button" onclick="nextSection('siblings-information')">Next</button>
+            </div>
+        </div>
+
+        <div class="form-section" id="siblings-information">
+            <h2>Siblings Information</h2>
+            <table>
+                <tr>
+                    <th>Name</th>
+                    <th>School/Place of Work/Occupation</th>
+                    <th>Age</th>
+                </tr>
+                <tr>
+                    <td><input type="text"></td>
+                    <td><input type="text"></td>
+                    <td><input type="number"></td>
+                </tr>
+                <tr>
+                    <td><input type="text"></td>
+                    <td><input type="text"></td>
+                    <td><input type="number"></td>
+                </tr>
+                <tr>
+                    <td><input type="text"></td>
+                    <td><input type="text"></td>
+                    <td><input type="number"></td>
+                </tr>
+                <tr>
+                    <td><input type="text"></td>
+                    <td><input type="text"></td>
+                    <td><input type="number"></td>
+                </tr>
+                <tr>
+                    <td><input type="text"></td>
+                    <td><input type="text"></td>
+                    <td><input type="number"></td>
+                </tr>
+            </table>
+            <div class="navigation">
+                <button type="button" onclick="prevSection('guardian-information')">Previous</button>
+                <button type="button" onclick="nextSection('emergency-contact')">Next</button>
+            </div>
+        </div>
+
+        <div class="form-section" id="emergency-contact">
+            <h2>Emergency Contact</h2>
+            <div class="form-group">
+                <label for="emergency-name">Name:</label>
+                <input type="text" id="emergency-name">
+                <label for="emergency-contact">Contact No:</label>
+                <input type="tel" id="emergency-contact">
+            </div>
+            <div class="navigation">
+                <button type="button" onclick="prevSection('siblings-information')">Previous</button>
+                <button type="button" onclick="nextSection('school-history')">Next</button>
+            </div>
+        </div>
+
+        <div class="form-section" id="school-history">
+            <h2>School History</h2>
+            <table>
+                <tr>
+                    <th>School Level</th>
+                    <th>Name of School</th>
+                    <th>Inclusive Dates</th>
+                </tr>
+                <tr>
+                    <td>Pre-School</td>
+                    <td><input type="text"></td>
+                    <td><input type="text"></td>
+                </tr>
+                <tr>
+                    <td>Elementary</td>
+                    <td><input type="text"></td>
+                    <td><input type="text"></td>
+                </tr>
+                <tr>
+                    <td>Junior High</td>
+                    <td><input type="text"></td>
+                    <td><input type="text"></td>
+                </tr>
+                <tr>
+                    <td>Senior High</td>
+                    <td><input type="text"></td>
+                    <td><input type="text"></td>
+                </tr>
+            </table>
+            <div class="navigation">
+                <button type="button" onclick="prevSection('emergency-contact')">Previous</button>
+                <button type="button" onclick="nextSection('school-records')">Next</button>
+            </div>
+        </div>
+
+        <div class="form-section" id="school-records">
+            <h2>School Records</h2>
+            <table>
+                <tr>
+                    <th>Grade Level</th>
+                    <th>Dropped Out</th>
+                    <th>Date of Withdrawal</th>
+                    <th>Transferred Out</th>
+                    <th>Reason</th>
+                </tr>
+                <tr>
+                    <td>Grade 7</td>
+                    <td><input type="checkbox" name="dropped_out_7"></td>
+                    <td><input type="date" name="withdrawal_date_7"></td>
+                    <td><input type="checkbox" name="transferred_out_7"></td>
+                    <td><input type="text" name="reason_7"></td>
+                </tr>
+                <tr>
+                    <td>Grade 8</td>
+                    <td><input type="checkbox" name="dropped_out_8"></td>
+                    <td><input type="date" name="withdrawal_date_8"></td>
+                    <td><input type="checkbox" name="transferred_out_8"></td>
+                    <td><input type="text" name="reason_8"></td>
+                </tr>
+                <tr>
+                    <td>Grade 9</td>
+                    <td><input type="checkbox" name="dropped_out_9"></td>
+                    <td><input type="date" name="withdrawal_date_9"></td>
+                    <td><input type="checkbox" name="transferred_out_9"></td>
+                    <td><input type="text" name="reason_9"></td>
+                </tr>
+                <tr>
+                    <td>Grade 10</td>
+                    <td><input type="checkbox" name="dropped_out_10"></td>
+                    <td><input type="date" name="withdrawal_date_10"></td>
+                    <td><input type="checkbox" name="transferred_out_10"></td>
+                    <td><input type="text" name="reason_10"></td>
+                </tr>
+                <tr>
+                    <td>Grade 11</td>
+                    <td><input type="checkbox" name="dropped_out_11"></td>
+                    <td><input type="date" name="withdrawal_date_11"></td>
+                    <td><input type="checkbox" name="transferred_out_11"></td>
+                    <td><input type="text" name="reason_11"></td>
+                </tr>
+                <tr>
+                    <td>Grade 12</td>
+                    <td><input type="checkbox" name="dropped_out_12"></td>
+                    <td><input type="date" name="withdrawal_date_12"></td>
+                    <td><input type="checkbox" name="transferred_out_12"></td>
+                    <td><input type="text" name="reason_12"></td>
+                </tr>
+            </table>
+            <div class="navigation">
+                <button type="button" onclick="prevSection('school-history')">Previous</button>
+                <button type="button" onclick="nextSection('interests-talents')">Next</button>
+            </div>
+        </div>
+
+        <div class="form-section" id="interests-talents">
+            <h2>Interests, Talents & Clubs/Organizations</h2>
+            <table>
+                <tr>
+                    <th>School Year</th>
+                    <th>Clubs/Organizations</th>
+                    <th>Significant Out-of-School Activities & Achievements</th>
+                    <th>Hobbies, Interests, Talents</th>
+                </tr>
+                <tr>
+                    <td>SY 20____ - 20____</td>
+                    <td><input type="text"></td>
+                    <td><input type="text"></td>
+                    <td><input type="text"></td>
+                </tr>
+                <tr>
+                    <td>SY 20____ - 20____</td>
+                    <td><input type="text"></td>
+                    <td><input type="text"></td>
+                    <td><input type="text"></td>
+                </tr>
+                <tr>
+                    <td>SY 20____ - 20____</td>
+                    <td><input type="text"></td>
+                    <td><input type="text"></td>
+                    <td><input type="text"></td>
+                </tr>
+                <tr>
+                    <td>SY 20____ - 20____</td>
+                    <td><input type="text"></td>
+                    <td><input type="text"></td>
+                    <td><input type="text"></td>
+                </tr>
+            </table>
+            <div class="navigation">
+                <button type="button" onclick="prevSection('school-records')">Previous</button>
+                <button type="button" onclick="nextSection('academic-record')">Next</button>
+            </div>
+        </div>
+
+        <div class="form-section" id="academic-record">
+            <h2>Academic Record</h2>
+            <table>
+                <tr>
+                    <th>Grade Level</th>
+                    <th>Honors</th>
+                    <th>Special Award</th>
+                </tr>
+                <tr>
+                    <td>Grade 7</td>
+                    <td><input type="text"></td>
+                    <td><input type="text"></td>
+                </tr>
+                <tr>
+                    <td>Grade 8</td>
+                    <td><input type="text"></td>
+                    <td><input type="text"></td>
+                </tr>
+                <tr>
+                    <td>Grade 9</td>
+                    <td><input type="text"></td>
+                    <td><input type="text"></td>
+                </tr>
+                <tr>
+                    <td>Grade 10</td>
+                    <td><input type="text"></td>
+                    <td><input type="text"></td>
+                </tr>
+                <tr>
+                    <td>Grade 11</td>
+                    <td><input type="text"></td>
+                    <td><input type="text"></td>
+                </tr>
+                <tr>
+                    <td>Grade 12</td>
+                    <td><input type="text"></td>
+                    <td><input type="text"></td>
+                </tr>
+            </table>
+            <div class="navigation">
+                <button type="button" onclick="prevSection('interests-talents')">Previous</button>
+                <button type="button" onclick="submitForm()">Submit</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentSectionIndex = 0;
+        const sections = document.querySelectorAll('.form-section');
+
+        function showSection(index) {
+            sections.forEach((section, i) => {
+                section.classList.toggle('active', i === index);
+            });
+        }
+
+        function nextSection(id) {
+            currentSectionIndex = Array.from(sections).findIndex(section => section.id === id);
+            showSection(currentSectionIndex);
+        }
+
+        function prevSection(id) {
+            currentSectionIndex = Array.from(sections).findIndex(section => section.id === id);
+            showSection(currentSectionIndex);
+        }
+
+        function toggleFields(parent) {
+            const fields = document.querySelectorAll(`.${parent}-field`);
+            const checkbox = document.getElementById(`${parent}-no-parent`);
+            fields.forEach(field => {
+                field.classList.toggle('disabled-field', checkbox.checked);
+                field.disabled = checkbox.checked;
+            });
+        }
+
+        function submitForm() {
+            alert('Form submitted successfully!');
+        }
+
+        // Initialize the first section
+        showSection(currentSectionIndex);
+    </script>
+</body>
+</html>

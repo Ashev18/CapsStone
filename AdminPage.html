@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Admin Dashboard</title>
+  <style>
+    body {
+      display: flex;
+      margin: 0;
+      font-family: Arial, sans-serif;
+    }
+    .sidebar {
+      width: 250px;
+      background: #2c3e50;
+      color: white;
+      padding: 20px;
+      height: 100vh;
+      position: fixed;
+      top: 0;
+      left: 0;
+    }
+    .sidebar h1 {
+      font-size: 22px;
+      margin-bottom: 20px;
+      text-align: center;
+    }
+    .sidebar ul {
+      list-style: none;
+      padding: 0;
+    }
+    .sidebar ul li {
+      padding: 12px;
+      cursor: pointer;
+      border-radius: 5px;
+      margin-bottom: 10px;
+      text-align: center;
+      background: #34495e;
+    }
+    .sidebar ul li:hover {
+      background: #1abc9c;
+    }
+    .sidebar ul li.active {
+      background: #1abc9c;
+    }
+    .main-content {
+      flex: 1;
+      padding: 20px;
+      background: #ecf0f1;
+      text-align: center;
+      margin-left: 270px;
+      min-height: 100vh;
+    }
+    .select-container {
+      margin-top: 10px;
+    }
+    h2 {
+      font-size: 20px;
+      text-align: center;
+    }
+    iframe {
+      width: 100%;
+      border: none;
+      display: block;
+      overflow: hidden;
+    }
+    #form-content {
+      width: 100%;
+      overflow: visible;
+      margin-top: 20px;
+    }
+
+    /* Styles for student management */
+    .container {
+      width: 80%;
+      margin: 20px auto;
+      padding: 20px;
+      background-color: white;
+      border-radius: 8px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    }
+
+    .dropdown, .search-bar {
+      margin: 10px;
+      padding: 8px;
+      border-radius: 4px;
+      border: 1px solid #ccc;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 20px;
+    }
+
+    table, th, td {
+      border: 1px solid #ddd;
+    }
+
+    th, td {
+      padding: 12px;
+      text-align: left;
+    }
+
+    th {
+      background-color: #4CAF50;
+      color: white;
+    }
+
+    tr:hover {
+      background-color: #f5f5f5;
+      cursor: pointer;
+    }
+
+    .popup {
+      display: none;
+      position: fixed;
+      top: 20%;
+      left: 50%;
+      transform: translateX(-50%);
+      background-color: white;
+      border: 1px solid #ddd;
+      padding: 20px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+      z-index: 1000;
+    }
+
+    .popup button {
+      background-color: red;
+      color: white;
+      padding: 5px 10px;
+      border: none;
+      cursor: pointer;
+    }
+
+    .popup button:hover {
+      background-color: darkred;
+    }
+  </style>
+
+  <script>
+    function navigate(page, element) {
+      const items = document.querySelectorAll('.sidebar ul li');
+      items.forEach(item => item.classList.remove('active'));
+      if (element) {
+        element.classList.add('active');
+      }
+
+      if (page === 'Home') {
+        document.getElementById("content").innerHTML = `
+          <h2>Welcome to Admin Dashboard</h2>
+          <p>Select an option from the sidebar.</p>`;
+      } else if (page === 'Counseling Statistics') {
+        document.getElementById("content").innerHTML = `
+          <h2>Counseling Statistics</h2>
+          <div class="select-container">
+            <select onchange="loadForm(this.value)">
+              <option value="">-- Select a form --</option>
+              <option value="consultation-form.html">Consultation Form</option>
+              <option value="conference-form.html">Conference Form</option>
+              <option value="initial-interview-form.html">Initial Interview Form</option>
+            </select>
+          </div>
+          <div id="form-content"></div>`;
+      } else if (page === 'Students') {
+        document.getElementById("content").innerHTML = `
+          <div class="container">
+            <select id="courseTrack" class="dropdown">
+              <option value="">All</option>
+              <option value="SHS">SHS</option>
+              <option value="College">College</option>
+            </select>
+
+            <input type="text" id="searchBar" class="search-bar" placeholder="Search student..." onkeyup="searchTable()">
+
+            <h2>Students</h2>
+
+            <table id="studentTable">
+              <thead>
+                <tr>
+                  <th>LRN</th>
+                  <th>First Name</th>
+                  <th>Middle Name</th>
+                  <th>Surname</th>
+                  <th>Address</th>
+                  <th>Course Track</th>
+                </tr>
+              </thead>
+              <tbody id="studentBody">
+                <!-- Data from DB will go here -->
+              </tbody>
+            </table>
+          </div>
+
+          <div id="popup" class="popup">
+            <h3>Student Info</h3>
+            <p><strong>LRN:</strong> <span id="popupLRN"></span></p>
+            <p><strong>First Name:</strong> <span id="popupFirstName"></span></p>
+            <p><strong>Middle Name:</strong> <span id="popupMiddleName"></span></p>
+            <p><strong>Surname:</strong> <span id="popupSurname"></span></p>
+            <p><strong>Address:</strong> <span id="popupAddress"></span></p>
+            <p><strong>Course Track:</strong> <span id="popupCourseTrack"></span></p>
+            <button onclick="closePopup()">Close</button>
+          </div>`;
+        fetchStudents(); // Fetch and render student data
+        setupCourseTrackListener(); // Setup the event listener for the course track dropdown
+      } else {
+        document.getElementById("content").innerHTML = `<h2>${page}</h2><p>Content for ${page} will appear here.</p>`;
+      }
+    }
+
+    function setupCourseTrackListener() {
+      const courseTrackDropdown = document.getElementById("courseTrack");
+      if (courseTrackDropdown) {
+        courseTrackDropdown.addEventListener("change", function () {
+          const selected = this.value;
+          let filtered;
+
+          if (selected === "SHS") {
+            const shsCourses = ["STEM", "GAS", "ABM", "TVL", "ICT"];
+            filtered = studentsData.filter(s => shsCourses.includes(s.course_track));
+          } else if (selected === "College") {
+            const collegeCourses = ["BSIS", "DHRT", "ACT", "DICT", "DIT"];
+            filtered = studentsData.filter(s => collegeCourses.includes(s.course_track));
+          } else {
+            filtered = studentsData;
+          }
+
+          renderTable(filtered);
+        });
+      }
+    }
+
+    function loadForm(formPage) {
+      if (formPage) {
+        document.getElementById("form-content").innerHTML = `
+          <iframe src="${formPage}" onload="resizeIframe(this)" id="formIframe"></iframe>`;
+      } else {
+        document.getElementById("form-content").innerHTML = "";
+      }
+    }
+
+    function resizeIframe(iframe) {
+      try {
+        const iframeDoc = iframe.contentDocument || iframe.contentWindow.document;
+        iframe.style.height = iframeDoc.body.scrollHeight + 40 + "px";
+      } catch (e) {
+        console.error("Could not resize iframe:", e);
+      }
+    }
+
+    let studentsData = [];
+
+    function fetchStudents() {
+      fetch('get_students.php') // your correct backend file name
+        .then(response => response.json())
+        .then(data => {
+          studentsData = data;
+          renderTable(data);
+        })
+        .catch(error => console.error('Error fetching users:', error));
+    }
+
+    function renderTable(data) {
+      const tbody = document.getElementById("studentBody");
+      tbody.innerHTML = "";
+
+      data.forEach(student => {
+        const row = document.createElement("tr");
+        row.addEventListener("dblclick", () => {
+          showPopup(
+            student.lrn,
+            student.first_name,
+            student.middle_name || "",
+            student.surname,
+            student.address || "",
+            student.course_track || ""
+          );
+        });
+
+        row.innerHTML = `
+          <td>${student.lrn}</td>
+          <td>${student.first_name}</td>
+          <td>${student.middle_name || ""}</td>
+          <td>${student.surname}</td>
+          <td>${student.address || ""}</td>
+          <td>${student.course_track || ""}</td>
+        `;
+        tbody.appendChild(row);
+      });
+    }
+
+    function searchTable() {
+      const input = document.getElementById("searchBar").value.toLowerCase();
+      const filteredData = studentsData.filter(student =>
+        Object.values(student).some(value =>
+          (value || "").toString().toLowerCase().includes(input)
+        )
+      );
+      renderTable(filteredData);
+    }
+
+    function showPopup(lrn, firstName, middleName, surname, address, courseTrack) {
+      document.getElementById("popupLRN").textContent = lrn;
+      document.getElementById("popupFirstName").textContent = firstName;
+      document.getElementById("popupMiddleName").textContent = middleName;
+      document.getElementById("popupSurname").textContent = surname;
+      document.getElementById("popupAddress").textContent = address;
+      document.getElementById("popupCourseTrack").textContent = courseTrack;
+      document.getElementById("popup").style.display = "block";
+    }
+
+    function closePopup() {
+      document.getElementById("popup").style.display = "none";
+    }
+
+    document.addEventListener("DOMContentLoaded", function() {
+      const homeBtn = document.querySelector('.sidebar ul li');
+      navigate('Home', homeBtn);
+      homeBtn.classList.add('active');
+    });
+  </script>
+</head>
+<body>
+  <div class="sidebar">
+    <h1>Admin Dashboard</h1>
+    <ul>
+      <li onclick="navigate('Home', this)">Home</li>
+      <li onclick="navigate('Students', this)">Students</li>
+      <li onclick="navigate('Counseling Statistics', this)">Counseling Statistics</li>
+      <li onclick="navigate('Guidance Form', this)">Guidance Form</li>
+    </ul>
+  </div>
+  <div class="main-content" id="content">
+    <h2>Welcome to Admin Dashboard</h2>
+    <p>Select an option from the sidebar.</p>
+  </div>
+</body>
+</html>

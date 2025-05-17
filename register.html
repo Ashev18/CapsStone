@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create Account - Northlink Technological College</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f8f8f8;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            padding: 20px;
+        }
+        .logo {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .container {
+            width: 500px;
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        .container h2 {
+            text-align: center;
+        }
+        .section-title {
+            font-weight: bold;
+            font-size: 18px;
+            color: #0073e6;
+            margin-top: 20px;
+        }
+        .container label {
+            display: block;
+            margin-top: 10px;
+        }
+        .container input, .container select {
+            width: 95%;
+            padding: 10px;
+            margin-top: 5px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+        .info-text {
+            font-size: 12px;
+            color: gray;
+            margin-top: 5px;
+        }
+        .button-container {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 20px;
+        }
+        .container button {
+            width: 48%;
+            padding: 10px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .create-account {
+            background-color: #0073e6;
+            color: white;
+        }
+        .create-account:hover {
+            background-color: #005bb5;
+        }
+        .cancel {
+            background-color: #ccc;
+            color: black;
+        }
+        .cancel:hover {
+            background-color: #bbb;
+        }
+        .checkbox-container {
+            display: flex;
+            align-items: center;
+            margin-top: 10px;
+        }
+        .checkbox-container input {
+            width: auto;
+            margin-right: 10px;
+        }
+        .popup {
+            display: none;
+            position: fixed;
+            top: 20%;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: #d4edda;
+            border: 1px solid #c3e6cb;
+            padding: 20px;
+            border-radius: 10px;
+            color: #155724;
+            font-weight: bold;
+            z-index: 9999;
+        }
+    </style>
+    <script>
+        function validateForm() {
+            const fields = [
+                "username", "password", "confirm-password", "email", "email-again",
+                "first-name", "surname", "middlename", "city", "course", "year-level", "lrn"
+            ];
+            for (const id of fields) {
+                if (!document.getElementById(id).value.trim()) {
+                    alert("All fields must be filled out.");
+                    return false;
+                }
+            }
+
+            if (document.getElementById("email").value !== document.getElementById("email-again").value) {
+                alert("Emails do not match.");
+                return false;
+            }
+            if (document.getElementById("password").value !== document.getElementById("confirm-password").value) {
+                alert("Passwords do not match.");
+                return false;
+            }
+            if (!document.getElementById("agree-terms").checked) {
+                alert("You must agree to the terms and conditions.");
+                return false;
+            }
+            return true;
+        }
+
+        function filterYearLevels() {
+            const course = document.getElementById("course").value;
+            const yearSelect = document.getElementById("year-level");
+            const allOptions = [
+                "Grade 11", "Grade 12", "1st Year", "2nd Year", "3rd Year", "4th Year"
+            ];
+
+            yearSelect.innerHTML = '<option value="">-- Select Year Level --</option>';
+            let optionsToShow = [];
+
+            if (["STEM", "GAS", "ABM", "TVL", "ICT"].includes(course)) {
+                optionsToShow = ["Grade 11", "Grade 12"];
+            } else if (course === "DIT") {
+                optionsToShow = ["1st Year", "2nd Year"];
+            } else if (course === "DHRT") {
+                optionsToShow = ["1st Year", "2nd Year", "3rd Year"];
+            } else if (["BSIS", "ACT"].includes(course)) {
+                optionsToShow = ["1st Year", "2nd Year", "3rd Year", "4th Year"];
+            }
+
+            optionsToShow.forEach(year => {
+                const opt = document.createElement("option");
+                opt.value = year;
+                opt.textContent = year;
+                yearSelect.appendChild(opt);
+            });
+        }
+
+        function showPopup() {
+            document.getElementById("popup").style.display = "block";
+        }
+
+        function redirectToStudent() {
+            window.location.href = "login.html";
+        }
+    </script>
+</head>
+<body>
+    <div class="logo">
+        <img class="img-fluid" src="https://northlink.edu.ph/lms/pluginfile.php/1/core_admin/logo/0x200/1724498623/ntc%20logo.PNG" alt="myNTC">
+    </div>
+    <div class="container">
+        <h2>New Account</h2>
+
+        <form action="create_account.php" method="post" onsubmit="return validateForm()">
+            <div class="section-title">Choose your username and password</div>
+            <label for="username">Username</label>
+            <input type="text" id="username" name="username">
+
+            <label for="password">Password</label>
+            <input type="password" id="password" name="password">
+
+            <label for="confirm-password">Re-enter Password</label>
+            <input type="password" id="confirm-password" name="confirm-password">
+
+            <label for="email">Email address</label>
+            <input type="text" id="email" name="email">
+
+            <label for="email-again">Re-enter Email</label>
+            <input type="text" id="email-again" name="email-again">
+
+            <label for="first-name">First name</label>
+            <input type="text" id="first-name" name="first_name">
+
+            <label for="surname">Surname</label>
+            <input type="text" id="surname" name="surname">
+
+            <label for="middlename">Middle Name</label>
+            <input type="text" id="middlename" name="middle_name">
+
+            <label for="city">Address</label>
+            <input type="text" id="city" name="address">
+
+            <label for="lrn">LRN</label>
+            <input type="text" id="lrn" name="lrn">
+
+            <label for="course">Course/Track</label>
+            <select id="course" name="course_track" onchange="filterYearLevels()">
+                <option value="">-- Select Course/Track --</option>
+                <option value="BSIS">BSIS</option>
+                <option value="DHRT">DHRT</option>
+                <option value="ACT">ACT</option>
+                <option value="DIT">DIT</option>
+                <option value="STEM">STEM</option>
+                <option value="GAS">GAS</option>
+                <option value="ABM">ABM</option>
+                <option value="TVL">TVL</option>
+                <option value="ICT">ICT</option>
+            </select>
+
+            <label for="year-level">Year Level</label>
+            <select id="year-level" name="year_level">
+                <option value="">-- Select Year Level --</option>
+            </select>
+
+            <div class="checkbox-container">
+                <input type="checkbox" id="agree-terms" name="agree-terms">
+                <label for="agree-terms">I agree to the terms and conditions.</label>
+            </div>
+
+            <div class="button-container">
+                <button class="create-account" type="submit">Create my new account</button>
+                <button class="cancel" type="button" onclick="window.location.href='login.html'">Cancel</button>
+            </div>
+        </form>
+    </div>
+
+    <div id="popup" class="popup">
+        Account created successfully!
+        <br><br>
+        <button onclick="redirectToStudent()">OK</button>
+    </div>
+
+    <!-- Trigger popup via PHP query (from create_account.php) -->
+    <script>
+        const urlParams = new URLSearchParams(window.location.search);
+        if (urlParams.get("success") === "1") {
+            showPopup();
+        }
+    </script>
+</body>
+</html>

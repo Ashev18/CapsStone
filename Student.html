@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Student Table</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f0f0f0;
+      margin: 0;
+      padding: 0;
+    }
+
+    .container {
+      width: 80%;
+      margin: 20px auto;
+      padding: 20px;
+      background-color: white;
+      border-radius: 8px;
+    }
+
+    .dropdown, .search-bar {
+      margin: 10px;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    table, th, td {
+      border: 1px solid #ddd;
+    }
+
+    th, td {
+      padding: 10px;
+      text-align: left;
+    }
+
+    th {
+      background-color: #4CAF50;
+      color: white;
+    }
+
+    tr:hover {
+      background-color: #f5f5f5;
+      cursor: pointer;
+    }
+
+    .popup {
+      display: none;
+      position: fixed;
+      top: 20%;
+      left: 50%;
+      transform: translateX(-50%);
+      background-color: white;
+      border: 1px solid #ddd;
+      padding: 20px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+      z-index: 1000;
+    }
+
+    .popup button {
+      background-color: red;
+      color: white;
+      padding: 5px 10px;
+      border: none;
+      cursor: pointer;
+    }
+
+    .popup button:hover {
+      background-color: darkred;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <select id="courseTrack" class="dropdown">
+      <option value="">All</option>
+      <option value="SHS">SHS</option>
+      <option value="College">College</option>
+    </select>
+
+    <input type="text" id="searchBar" class="search-bar" placeholder="Search student..." onkeyup="searchTable()">
+
+    <h2>Students</h2>
+
+    <table id="studentTable">
+      <thead>
+        <tr>
+          <th>LRN</th>
+          <th>First Name</th>
+          <th>Middle Name</th>
+          <th>Surname</th>
+          <th>Address</th>
+          <th>Course Track</th>
+        </tr>
+      </thead>
+      <tbody id="studentBody">
+        <!-- Data will load here -->
+      </tbody>
+    </table>
+  </div>
+
+  <div id="popup" class="popup">
+    <h3>Student Info</h3>
+    <p><strong>LRN:</strong> <span id="popupLRN"></span></p>
+    <p><strong>First Name:</strong> <span id="popupFirstName"></span></p>
+    <p><strong>Middle Name:</strong> <span id="popupMiddleName"></span></p>
+    <p><strong>Surname:</strong> <span id="popupSurname"></span></p>
+    <p><strong>Address:</strong> <span id="popupAddress"></span></p>
+    <p><strong>Course Track:</strong> <span id="popupCourseTrack"></span></p>
+    <button onclick="closePopup()">Close</button>
+  </div>
+
+  <script>
+    let studentsData = [];
+
+    function fetchStudents() {
+      fetch('get_students.php')
+        .then(response => response.json())
+        .then(data => {
+          studentsData = data;
+          renderTable(data);
+        })
+        .catch(error => console.error('Error fetching students:', error));
+    }
+
+    function renderTable(data) {
+      const tbody = document.getElementById("studentBody");
+      tbody.innerHTML = "";
+
+      data.forEach(student => {
+        const row = document.createElement("tr");
+        row.addEventListener("dblclick", () => {
+          showPopup(
+            student.lrn,
+            student.first_name,
+            student.middle_name || "",
+            student.surname,
+            student.address || "",
+            student.course_track || ""
+          );
+        });
+
+        row.innerHTML = `
+          <td>${student.lrn}</td>
+          <td>${student.first_name}</td>
+          <td>${student.middle_name || ""}</td>
+          <td>${student.surname}</td>
+          <td>${student.address || ""}</td>
+          <td>${student.course_track || ""}</td>
+        `;
+        tbody.appendChild(row);
+      });
+    }
+
+    function searchTable() {
+      const input = document.getElementById("searchBar").value.toLowerCase();
+      const filteredData = studentsData.filter(student =>
+        Object.values(student).some(value =>
+          (value || "").toString().toLowerCase().includes(input)
+        )
+      );
+      renderTable(filteredData);
+    }
+
+    function showPopup(lrn, firstName, middleName, surname, address, courseTrack) {
+      document.getElementById("popupLRN").textContent = lrn;
+      document.getElementById("popupFirstName").textContent = firstName;
+      document.getElementById("popupMiddleName").textContent = middleName;
+      document.getElementById("popupSurname").textContent = surname;
+      document.getElementById("popupAddress").textContent = address;
+      document.getElementById("popupCourseTrack").textContent = courseTrack;
+      document.getElementById("popup").style.display = "block";
+    }
+
+    function closePopup() {
+      document.getElementById("popup").style.display = "none";
+    }
+
+    document.getElementById("courseTrack").addEventListener("change", function () {
+      const selected = this.value;
+      let filtered;
+
+      if (selected === "SHS") {
+        const shsCourses = ["STEM", "GAS", "ABM", "TVL", "ICT"];
+        filtered = studentsData.filter(s => shsCourses.includes(s.course_track));
+      } else if (selected === "College") {
+        const collegeCourses = ["BSIS", "DHRT", "ACT", "DICT", "DIT"]; // Added "DIT" here
+    filtered = studentsData.filter(s => collegeCourses.includes(s.course_track));
+  } else {
+        filtered = studentsData;
+      }
+
+      renderTable(filtered);
+    });
+
+    window.onload = fetchStudents;
+  </script>
+</body>
+</html>
